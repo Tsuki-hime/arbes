@@ -7,7 +7,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,11 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 public class TelephoneBillCalculatorImpl implements TelephoneBillCalculator {
-
-    //create method for counting each call
-    // in the method don't count the most called num
-    //return total for all csv file
-    //tests???
 
     @Override
     public BigDecimal calculate(String phoneLog) {
@@ -75,9 +72,28 @@ public class TelephoneBillCalculatorImpl implements TelephoneBillCalculator {
     }
 
     private BigDecimal payUp(LocalDateTime start, LocalDateTime end) {
+        BigDecimal priceOfCall;
 
+        //rates
+        BigDecimal eightToFour = new BigDecimal("1.0");
+        BigDecimal theRest = new BigDecimal("0.5");
+        BigDecimal afterFive = new BigDecimal("0.2");
 
-        return null;
+        long callDurationSec = Duration.between(start, end).toSeconds();
+        long callDurationMin = (callDurationSec + 59) / 60;
+
+        LocalTime beginning =  LocalTime.of(8, 0, 0);
+        LocalTime ending =  LocalTime.of(15, 59, 59);
+
+        boolean isAfter8AndB44 = start.toLocalTime().isAfter(beginning) && end.toLocalTime().isBefore(ending);
+
+        if (callDurationMin <= 5){
+            priceOfCall = isAfter8AndB44 ? eightToFour.multiply(new BigDecimal(callDurationMin)) : theRest.multiply(new BigDecimal(callDurationMin));
+        } else {
+            BigDecimal afterFiveDur = afterFive.multiply(new BigDecimal(callDurationMin - 5));
+            priceOfCall = isAfter8AndB44 ? eightToFour.multiply(new BigDecimal(5).add(afterFiveDur)) : theRest.multiply(new BigDecimal(5).add(afterFiveDur));
+        }
+        return priceOfCall;
     }
 
     public static String findMostCalledNum(Map<String, CallDetails> telNumCount) {
