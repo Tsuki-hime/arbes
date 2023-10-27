@@ -22,7 +22,7 @@ public class TelephoneBillCalculatorImpl implements TelephoneBillCalculator {
 
     @Override
     public BigDecimal calculate(String phoneLog) {
-        Map<String, Integer> telNumCount = new HashMap<>();
+        Map<String, CallDetails> telNumCount = new HashMap<>();
         BigDecimal total = BigDecimal.ZERO;
 
         try {
@@ -44,10 +44,11 @@ public class TelephoneBillCalculatorImpl implements TelephoneBillCalculator {
 
                 //saving telNums and their occurrences to map
                 if (telNumCount.containsKey(telNum)){
-                    int newCount = telNumCount.get(telNum) + 1;
-                    telNumCount.put(telNum, newCount);
+                    CallDetails cd = telNumCount.get(telNum);
+                    cd.setOccurrence(cd.getOccurrence() + 1);
                 } else {
-                    telNumCount.put(telNum, 1);
+                    CallDetails cd = new CallDetails(telNum, startTime, endTime, 1);
+                    telNumCount.put(telNum, cd);
                 }
             }
 
@@ -64,13 +65,13 @@ public class TelephoneBillCalculatorImpl implements TelephoneBillCalculator {
         return total;
     }
 
-    public static String findMostCalledNum(Map<String, Integer> telNumCount){
+    public static String findMostCalledNum(Map<String, CallDetails> telNumCount){
         int maxCount = 0;
         String mostCalledNum = null;
 
-        for (Map.Entry<String, Integer> pair : telNumCount.entrySet()) {
+        for (Map.Entry<String, CallDetails> pair : telNumCount.entrySet()) {
             String currentTelNum = pair.getKey();
-            int count = pair.getValue();
+            int count = pair.getValue().getOccurrence();
             if (count > maxCount || (count == maxCount && currentTelNum.compareTo(mostCalledNum) > 0)){
                 maxCount = count;
                 mostCalledNum = currentTelNum;
