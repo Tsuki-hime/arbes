@@ -53,7 +53,17 @@ public class TelephoneBillCalculatorImpl implements TelephoneBillCalculator {
     }
 
     public static String findMostCalledNum(Map<String, Integer> telNumCount){
+        int maxCount = 0;
+        String mostCalledNum = null;
 
-        return "";
+        for (Map.Entry<String, Integer> pair : telNumCount.entrySet()) {
+            String currentTelNum = pair.getKey();
+            int count = pair.getValue();
+            if (count > maxCount || (count == maxCount && currentTelNum.compareTo(mostCalledNum) > 0)){
+                maxCount = count;
+                mostCalledNum = currentTelNum;
+            }
+        }
+        return mostCalledNum;
     }
 }
