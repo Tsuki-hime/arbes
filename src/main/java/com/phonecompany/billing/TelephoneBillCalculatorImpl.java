@@ -7,14 +7,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
 public class TelephoneBillCalculatorImpl implements TelephoneBillCalculator {
 
-    // read csv file
-    //extract telNum
-    //find the most called one
     //read the data formats - time
     //create method for counting each call
     // in the method don't count the most called num
@@ -24,14 +23,26 @@ public class TelephoneBillCalculatorImpl implements TelephoneBillCalculator {
     @Override
     public BigDecimal calculate(String phoneLog) {
         Map<String, Integer> telNumCount = new HashMap<>();
+        BigDecimal total = BigDecimal.ZERO;
 
         try {
+            //loading data from the file
             CSVReader reader = new CSVReader(new FileReader(phoneLog));
             String[] currentLine;
 
-            while ((currentLine = reader.readNext()) != null){
-                String telNum = currentLine[0];
+            //adjusting time data format
+            String csvDTF = "dd-MM-yyyy HH:mm:ss";
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(csvDTF);
 
+
+            while ((currentLine = reader.readNext()) != null){
+                //breaking the line
+                String telNum = currentLine[0];
+                LocalDateTime startTime = LocalDateTime.parse(currentLine[1], formatter);
+                LocalDateTime endTime = LocalDateTime.parse(currentLine[2], formatter);
+
+
+                //saving telNums and their occurrences to map
                 if (telNumCount.containsKey(telNum)){
                     int newCount = telNumCount.get(telNum) + 1;
                     telNumCount.put(telNum, newCount);
@@ -42,6 +53,7 @@ public class TelephoneBillCalculatorImpl implements TelephoneBillCalculator {
 
             String mostCalledNum = findMostCalledNum(telNumCount);
 
+
         } catch (FileNotFoundException fnf){
             System.out.println("Can not find the file.");
         } catch (IOException | CsvValidationException ioe) {
@@ -49,7 +61,7 @@ public class TelephoneBillCalculatorImpl implements TelephoneBillCalculator {
         }
 
 
-        return null;
+        return total;
     }
 
     public static String findMostCalledNum(Map<String, Integer> telNumCount){
