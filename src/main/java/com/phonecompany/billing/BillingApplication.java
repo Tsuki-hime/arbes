@@ -15,8 +15,7 @@ public class BillingApplication {
         String filepath = "forTheTest.csv";
         String filepath2 = "otherTestFile.csv";
 
-        BigDecimal total = calculator.calculate(filepath2);
+        BigDecimal total = calculator.calculate(filepath);
         System.out.println("Total amount: " + total);
     }
-
 }

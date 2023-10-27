@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -72,26 +71,33 @@ public class TelephoneBillCalculatorImpl implements TelephoneBillCalculator {
     }
 
     private BigDecimal payUp(LocalDateTime start, LocalDateTime end) {
-        BigDecimal priceOfCall;
-
+        BigDecimal priceOfCall = BigDecimal.ZERO;
         //rates
         BigDecimal eightToFour = new BigDecimal("1.0");
         BigDecimal theRest = new BigDecimal("0.5");
         BigDecimal afterFive = new BigDecimal("0.2");
 
-        long callDurationSec = Duration.between(start, end).toSeconds();
-        long callDurationMin = (callDurationSec + 59) / 60;
+        LocalTime beginning = LocalTime.of(8, 0, 0);
+        LocalTime ending = LocalTime.of(15, 59, 59);
 
-        LocalTime beginning =  LocalTime.of(8, 0, 0);
-        LocalTime ending =  LocalTime.of(15, 59, 59);
+        int minutesCounted = 0;
 
-        boolean isAfter8AndB44 = start.toLocalTime().isAfter(beginning) && end.toLocalTime().isBefore(ending);
+        while (start.isBefore(end)) {
+            BigDecimal currentRate;
 
-        if (callDurationMin <= 5){
-            priceOfCall = isAfter8AndB44 ? eightToFour.multiply(new BigDecimal(callDurationMin)) : theRest.multiply(new BigDecimal(callDurationMin));
-        } else {
-            BigDecimal afterFiveDur = afterFive.multiply(new BigDecimal(callDurationMin - 5));
-            priceOfCall = isAfter8AndB44 ? eightToFour.multiply(new BigDecimal(5).add(afterFiveDur)) : theRest.multiply(new BigDecimal(5).add(afterFiveDur));
+            if (start.toLocalTime().isAfter(beginning) && start.toLocalTime().isBefore(ending)) {
+                currentRate = eightToFour;
+            } else {
+                currentRate = theRest;
+            }
+
+            if (minutesCounted >= 5) {
+                currentRate = afterFive;
+            }
+
+            priceOfCall = priceOfCall.add(currentRate);
+            start = start.plusMinutes(1);
+            minutesCounted++;
         }
         return priceOfCall;
     }
