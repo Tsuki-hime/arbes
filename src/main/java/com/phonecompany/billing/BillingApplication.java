@@ -13,7 +13,6 @@ public class BillingApplication {
         TelephoneBillCalculatorImpl calculator = new TelephoneBillCalculatorImpl();
 
         String filepath = "forTheTest.csv";
-        String filepath2 = "otherTestFile.csv";
 
         BigDecimal total = calculator.calculate(filepath);
         System.out.println("Total amount: " + total);
