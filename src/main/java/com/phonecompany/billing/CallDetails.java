@@ -14,4 +14,9 @@ public class CallDetails {
     private LocalDateTime end;
     private int occurrence;
 
+    public CallDetails(String telNum, LocalDateTime start, LocalDateTime end) {
+        this.telNum = telNum;
+        this.start = start;
+        this.end = end;
+    }
 }
