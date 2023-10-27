@@ -12,7 +12,7 @@ public class BillingApplication {
         SpringApplication.run(BillingApplication.class, args);
         TelephoneBillCalculatorImpl calculator = new TelephoneBillCalculatorImpl();
 
-        String filepath = "";
+        String filepath = "forTheTest.csv";
 
         BigDecimal total = calculator.calculate(filepath);
         System.out.println("Total amount: " + total);
