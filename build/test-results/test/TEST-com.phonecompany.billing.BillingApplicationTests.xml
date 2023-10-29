@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.phonecompany.billing.BillingApplicationTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-10-27T10:58:29" hostname="DESKTOP-C2HT19K" time="1.64">
+  <properties/>
+  <testcase name="longCallCrossing5MinInt()" classname="com.phonecompany.billing.BillingApplicationTests" time="1.64"/>
+  <system-out><![CDATA[12:58:27.116 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.phonecompany.billing.BillingApplicationTests]: BillingApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+12:58:27.333 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.phonecompany.billing.BillingApplication for test class com.phonecompany.billing.BillingApplicationTests
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.1.5)
+
+2023-10-27T12:58:28.229+02:00  INFO 9896 --- [    Test worker] c.p.billing.BillingApplicationTests      : Starting BillingApplicationTests using Java 17.0.9 with PID 9896 (started by karol in C:\Users\karol\Desktop\uloha\billing)
+2023-10-27T12:58:28.231+02:00  INFO 9896 --- [    Test worker] c.p.billing.BillingApplicationTests      : No active profile set, falling back to 1 default profile: "default"
+2023-10-27T12:58:29.142+02:00  INFO 9896 --- [    Test worker] c.p.billing.BillingApplicationTests      : Started BillingApplicationTests in 1.401 seconds (process running for 3.708)
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -3,18 +3,23 @@ package com.phonecompany.billing;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @SpringBootApplication
 public class BillingApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BillingApplication.class, args);
         TelephoneBillCalculatorImpl calculator = new TelephoneBillCalculatorImpl();
 
         String filepath = "forTheTest.csv";
-
-        BigDecimal total = calculator.calculate(filepath);
-        System.out.println("Total amount: " + total);
+        try {
+            BigDecimal total = calculator.calculate(Files.readString(Path.of(filepath)));
+            System.out.println("Total amount: " + total);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
