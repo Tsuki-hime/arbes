@@ -1,8 +1,7 @@
 package com.phonecompany.billing;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -10,13 +9,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class TelephoneBillCalculatorImpl implements TelephoneBillCalculator {
 
     @Override
     public BigDecimal calculate(String phoneLog) {
-        Map<String, CallDetails> telNumCount = new HashMap<>();
+        Map<String, Integer> telNumCount = new HashMap<>();
         List<CallDetails> forTheMoney = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
 
@@ -34,23 +32,15 @@ public class TelephoneBillCalculatorImpl implements TelephoneBillCalculator {
 
                     forTheMoney.add(new CallDetails(telNum, startTime, endTime));
 
-                    //saving telNums and their occurrences to map
-                    if (telNumCount.containsKey(telNum)) {
-                        CallDetails cd = telNumCount.get(telNum);
-                        cd.setOccurrence(cd.getOccurrence() + 1);
-                    } else {
-                        CallDetails cd = new CallDetails(telNum, startTime, endTime, 1);
-                        telNumCount.put(telNum, cd);
-                    }
+                    telNumCount.put(telNum, telNumCount.getOrDefault(telNum, 0) + 1);
                 });
 
 
         String mostCalledNum = findMostCalledNum(telNumCount);
 
-        //sums up all calls except for mostCalledNum
         for (CallDetails callDetails : forTheMoney) {
             if (!callDetails.getTelNum().equals(mostCalledNum)) {
-                BigDecimal priceOfCall = payUp(callDetails.getStart(), callDetails.getEnd());
+                BigDecimal priceOfCall = getPrice(callDetails.getStart(), callDetails.getEnd());
                 total = total.add(priceOfCall);
             }
         }
@@ -58,7 +48,7 @@ public class TelephoneBillCalculatorImpl implements TelephoneBillCalculator {
         return total;
     }
 
-    private BigDecimal payUp(LocalDateTime start, LocalDateTime end) {
+    private BigDecimal getPrice(LocalDateTime start, LocalDateTime end) {
         BigDecimal priceOfCall = BigDecimal.ZERO;
         //rates
         BigDecimal eightToFour = new BigDecimal("1.0");
@@ -80,7 +70,8 @@ public class TelephoneBillCalculatorImpl implements TelephoneBillCalculator {
             }
 
             if (minutesCounted >= 5) {
-                currentRate = afterFive;
+                BigDecimal rest = new BigDecimal(Duration.between(start.toLocalTime(), end.toLocalTime()).getSeconds() / 60);
+                return priceOfCall.add(afterFive.multiply(rest.add(BigDecimal.ONE)));
             }
 
             priceOfCall = priceOfCall.add(currentRate);
@@ -90,13 +81,13 @@ public class TelephoneBillCalculatorImpl implements TelephoneBillCalculator {
         return priceOfCall;
     }
 
-    public static String findMostCalledNum(Map<String, CallDetails> telNumCount) {
+    public static String findMostCalledNum(Map<String, Integer> telNumCount) {
         int maxCount = 0;
         String mostCalledNum = null;
 
-        for (Map.Entry<String, CallDetails> pair : telNumCount.entrySet()) {
+        for (Map.Entry<String, Integer> pair : telNumCount.entrySet()) {
             String currentTelNum = pair.getKey();
-            int count = pair.getValue().getOccurrence();
+            int count = pair.getValue();
             if (count > maxCount || (count == maxCount && currentTelNum.compareTo(mostCalledNum) > 0)) {
                 maxCount = count;
                 mostCalledNum = currentTelNum;
